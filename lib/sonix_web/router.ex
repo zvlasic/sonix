@@ -17,17 +17,10 @@ defmodule SonixWeb.Router do
   scope "/", SonixWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", SonixLive
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", SonixWeb do
-  #   pipe_through :api
-  # end
-
-  # Enable Swoosh mailbox preview in development
   if Application.compile_env(:sonix, :dev_routes) do
-
     scope "/dev" do
       pipe_through :browser
 
