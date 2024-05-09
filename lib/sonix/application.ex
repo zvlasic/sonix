@@ -7,6 +7,8 @@ defmodule Sonix.Application do
 
   @impl true
   def start(_type, _args) do
+    Sonix.Config.validate!()
+
     children = [
       Sonix.Repo,
       {Phoenix.PubSub, name: Sonix.PubSub},
