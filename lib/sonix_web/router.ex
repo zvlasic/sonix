@@ -17,6 +17,8 @@ defmodule SonixWeb.Router do
   scope "/", SonixWeb do
     pipe_through :browser
 
+    get "/callback", AuthController, :callback
+
     live "/", SonixLive
   end
 

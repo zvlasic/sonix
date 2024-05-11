@@ -1,4 +1,5 @@
 defmodule SonixWeb.SonixLive do
+  alias Sonix.LastFmClient
   use SonixWeb, :live_view
 
   def mount(_params, _session, socket) do
@@ -9,11 +10,11 @@ defmodule SonixWeb.SonixLive do
     ~H"""
     <div class="container">
       <h1>Welcome to Sonix!</h1>
-      <p>
-        This is a live view. It's like a Phoenix controller, but it's
-        stateful and it can push updates to the client.
-      </p>
+      <.button phx-click="auth">Log in with Last.FM</.button>
     </div>
     """
   end
+
+  def handle_event("auth", _, socket),
+    do: {:noreply, redirect(socket, external: LastFmClient.oauth_url())}
 end

@@ -6,10 +6,16 @@ defmodule Sonix.LastFmClient do
                     else: Sonix.LastFmClient.Real
 
   def user_top_artists(user, period), do: @last_fm_client.user_top_artists(user, period)
+  def auth_get_session(token), do: @last_fm_client.auth_get_session(token)
+
+  def oauth_url do
+    "http://www.last.fm/api/auth/?api_key=#{Config.last_fm_api_key()}&cb=#{Config.last_fm_callback()}"
+  end
 
   defmodule Behaviour do
     @type user :: String.t()
     @type period :: String.t()
+    @type token :: String.t()
     @type user_top_artists_response :: [
             %{
               name: String.t(),
@@ -22,8 +28,13 @@ defmodule Sonix.LastFmClient do
             }
           ]
 
+    @type auth_get_session_response :: %{session: String.t(), username: String.t()}
+
     @callback user_top_artists(user(), period()) ::
                 {:ok, user_top_artists_response()} | {:error, String.t()}
+
+    @callback auth_get_session(token()) ::
+                {:ok, auth_get_session_response()} | {:error, String.t()}
   end
 
   defmodule Real do
@@ -44,6 +55,36 @@ defmodule Sonix.LastFmClient do
       else
         error -> normalize_error_response(error)
       end
+    end
+
+    @impl Sonix.LastFmClient.Behaviour
+    def auth_get_session(token) do
+      api_sig = generate_signature_string(method: "auth.getSession", token: token)
+
+      params = [
+        api_key: Config.last_fm_api_key(),
+        token: token,
+        api_sig: api_sig,
+        format: "json"
+      ]
+
+      url = "#{@api_url}?method=auth.getSession"
+      headers = [{"Content-Type", "application/x-www-form-urlencoded"}]
+
+      with {:ok, %HTTPoison.Response{body: body, status_code: 200}} <-
+             HTTPoison.post(url, {:form, params}, headers),
+           {:ok, %{session: %{name: name, key: key}}} <- Jason.decode(body, keys: :atoms) do
+        {:ok, %{session: key, username: name}}
+      else
+        error -> normalize_error_response(error)
+      end
+    end
+
+    defp generate_signature_string(params) do
+      params = [{:api_key, Config.last_fm_api_key()} | params]
+      signature_string = Enum.map_join(params, fn {key, value} -> "#{key}#{value}" end)
+      signature_with_secret = signature_string <> Config.last_fm_secret()
+      :crypto.hash(:md5, signature_with_secret) |> Base.encode16() |> String.downcase()
     end
 
     defp normalize_user_top_artists_response(artist_list) do
