@@ -10,7 +10,7 @@ defmodule SonixWeb.SonixLive do
     ~H"""
     <div class="container">
       <h1>Welcome to Sonix!</h1>
-      <.button phx-click="auth">Log in with Last.FM</.button>
+      <.button id="auth" phx-click="auth">Log in with Last.FM</.button>
     </div>
     """
   end
