@@ -3,6 +3,8 @@ defmodule Sonix.LastFmClientTest do
   alias Sonix.LastFmClient
   import Mox
 
+  setup :verify_on_exit!
+
   describe "Last FM client" do
     test "returns properly formed list" do
       expect(LastFmClient.Test, :user_top_artists, fn user, period ->
