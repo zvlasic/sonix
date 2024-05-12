@@ -4,6 +4,7 @@ defmodule Sonix.Config do
     params: [
       {:last_fm_api_key, dev: "last_fm_api_key"},
       {:last_fm_secret, dev: "last_fm_secret"},
-      {:last_fm_callback, dev: "http://localhost:4000/callback"}
+      {:last_fm_callback, dev: "http://localhost:4000/callback"},
+      {:open_ai_key, dev: "open_ai_key"}
     ]
 end
