@@ -1,10 +1,11 @@
 defmodule SonixWeb.SonixLive do
-  alias Sonix.LastFmClient
   use SonixWeb, :live_view
+
+  alias Sonix.{LastFmClient, OpenAiClient}
 
   def mount(_params, session, socket) do
     username = session["username"]
-    {:ok, assign(socket, username: username, artists: [])}
+    {:ok, assign(socket, username: username, artists: [], suggestion: "")}
   end
 
   def render(assigns) do
@@ -44,6 +45,10 @@ defmodule SonixWeb.SonixLive do
           </:col>
         </.table>
       </form>
+      <.button phx-click="suggest">Suggest me some music!</.button>
+      <div>
+        <%= raw(@suggestion) %>
+      </div>
     </div>
     """
   end
@@ -69,4 +74,38 @@ defmodule SonixWeb.SonixLive do
 
     {:noreply, assign(socket, :artists, artists)}
   end
+
+  def handle_event("suggest", _params, socket) do
+    artist_names = for artist <- socket.assigns.artists, artist.favorite, do: artist.name
+    artist_names = Enum.join(artist_names, ", ")
+
+    prompt =
+      """
+      Please, suggest me 3 artist similar to these #{artist_names}.
+      I want output to be in the form of artist name and then a short description why
+      the artist is similar to those I like.
+      """
+
+    prompt |> OpenAiClient.stream() |> stream_response()
+    {:noreply, assign(socket, :suggestion, "")}
+  end
+
+  defp stream_response(stream) do
+    target = self()
+
+    Task.Supervisor.async(Sonix.TaskSupervisor, fn ->
+      for chunk <- stream, into: <<>> do
+        send(target, {:render_response_chunk, chunk})
+        chunk
+      end
+    end)
+  end
+
+  def handle_info({:render_response_chunk, chunk}, socket) do
+    suggestion = socket.assigns.suggestion
+    suggestion = suggestion <> chunk
+    {:noreply, assign(socket, :suggestion, suggestion)}
+  end
+
+  def handle_info(_out, socket), do: {:noreply, socket}
 end

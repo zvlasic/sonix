@@ -17,7 +17,8 @@ defmodule Sonix.Application do
       # Start a worker by calling: Sonix.Worker.start_link(arg)
       # {Sonix.Worker, arg},
       # Start to serve requests, typically the last entry
-      SonixWeb.Endpoint
+      SonixWeb.Endpoint,
+      {Task.Supervisor, name: Sonix.TaskSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
