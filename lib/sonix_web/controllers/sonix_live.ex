@@ -11,7 +11,7 @@ defmodule SonixWeb.SonixLive do
     ~H"""
     <div class="container">
       <h1>Welcome to Sonix!</h1>
-      <form phx-submit="users_top_artists">
+      <.simple_form for={} phx-submit="users_top_artists">
         <.input
           type="select"
           name="period"
@@ -27,22 +27,20 @@ defmodule SonixWeb.SonixLive do
         />
 
         <.button>GO!</.button>
-      </form>
-      <form>
-        <.table id="artists" rows={@artists}>
-          <:col :let={artist} label="Artist"><%= artist.name %></:col>
-          <:col :let={artist} label="Playcount"><%= artist.playcount %></:col>
-          <:col :let={artist}>
-            <.input
-              name="toggle_favorite"
-              type="checkbox"
-              phx-click="toggle_favorite"
-              phx-value-artist-name={artist.name}
-              checked={artist.favorite}
-            />
-          </:col>
-        </.table>
-      </form>
+      </.simple_form>
+      <.table id="artists" rows={@artists}>
+        <:col :let={artist} label="Artist"><%= artist.name %></:col>
+        <:col :let={artist} label="Playcount"><%= artist.playcount %></:col>
+        <:col :let={artist}>
+          <.input
+            name="toggle_favorite"
+            type="checkbox"
+            phx-click="toggle_favorite"
+            phx-value-artist-name={artist.name}
+            checked={artist.favorite}
+          />
+        </:col>
+      </.table>
       <.button phx-click="suggest">Suggest me some music!</.button>
       <div>
         <%= raw(@suggestion) %>
