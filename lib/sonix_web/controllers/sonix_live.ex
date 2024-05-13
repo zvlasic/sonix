@@ -28,23 +28,25 @@ defmodule SonixWeb.SonixLive do
 
         <.button>List top artists</.button>
       </.simple_form>
-      <.table id="artists" rows={@artists}>
-        <:col :let={artist} label="Artist"><%= artist.name %></:col>
-        <:col :let={artist} label="Playcount"><%= artist.playcount %></:col>
-        <:col :let={artist}>
-          <.input
-            name="toggle_favorite"
-            type="checkbox"
-            phx-click="toggle_favorite"
-            phx-value-artist-name={artist.name}
-            checked={artist.favorite}
-          />
-        </:col>
-      </.table>
-      <.button phx-click="suggest">Suggest me some music!</.button>
-      <div>
-        <%= raw(@suggestion) %>
-      </div>
+      <section :if={@artists != []}>
+        <.table id="artists" rows={@artists}>
+          <:col :let={artist} label="Artist"><%= artist.name %></:col>
+          <:col :let={artist} label="Playcount"><%= artist.playcount %></:col>
+          <:col :let={artist}>
+            <.input
+              name="toggle_favorite"
+              type="checkbox"
+              phx-click="toggle_favorite"
+              phx-value-artist-name={artist.name}
+              checked={artist.favorite}
+            />
+          </:col>
+        </.table>
+        <.button phx-click="suggest">Suggest me some music!</.button>
+        <div>
+          <%= raw(@suggestion) %>
+        </div>
+      </section>
     </div>
     """
   end
