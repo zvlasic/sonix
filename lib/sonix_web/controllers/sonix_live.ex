@@ -3,6 +3,8 @@ defmodule SonixWeb.SonixLive do
 
   alias Sonix.{LastFmClient, OpenAiClient}
 
+  import SonixWeb.Artists
+
   def mount(_params, _session, socket) do
     {:ok, assign(socket, artists: [], suggestion: "")}
   end
@@ -29,19 +31,7 @@ defmodule SonixWeb.SonixLive do
         <.button>List top artists</.button>
       </.simple_form>
       <section :if={@artists != []}>
-        <.table id="artists" rows={@artists}>
-          <:col :let={artist} label="Artist"><%= artist.name %></:col>
-          <:col :let={artist} label="Playcount"><%= artist.playcount %></:col>
-          <:col :let={artist}>
-            <.input
-              name="toggle_favorite"
-              type="checkbox"
-              phx-click="toggle_favorite"
-              phx-value-artist-name={artist.name}
-              checked={artist.favorite}
-            />
-          </:col>
-        </.table>
+        <.artists artists={@artists} />
         <.button phx-click="suggest">Suggest me some music!</.button>
         <div>
           <%= raw(@suggestion) %>
