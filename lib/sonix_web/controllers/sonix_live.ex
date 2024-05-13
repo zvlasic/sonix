@@ -54,7 +54,7 @@ defmodule SonixWeb.SonixLive do
 
     with {:ok, artists} <- LastFmClient.user_top_artists(username, period) do
       artists = Enum.map(artists, fn artist -> Map.merge(artist, %{favorite: true}) end)
-      {:noreply, assign(socket, artists: artists)}
+      {:noreply, assign(socket, artists: artists, suggestion: "")}
     end
   end
 
