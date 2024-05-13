@@ -10,11 +10,11 @@ defmodule SonixWeb.SonixLive do
   def render(assigns) do
     ~H"""
     <div class="container">
-      <h1>Welcome to Sonix!</h1>
       <.simple_form for={} phx-submit="users_top_artists">
         <.input
           type="select"
           name="period"
+          label="Select listening period"
           options={[
             {"Overall", "overall"},
             {"7 days", "7day"},
@@ -26,7 +26,7 @@ defmodule SonixWeb.SonixLive do
           value="overall"
         />
 
-        <.button>GO!</.button>
+        <.button>List top artists</.button>
       </.simple_form>
       <.table id="artists" rows={@artists}>
         <:col :let={artist} label="Artist"><%= artist.name %></:col>
