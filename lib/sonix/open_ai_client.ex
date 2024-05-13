@@ -68,7 +68,7 @@ defmodule Sonix.OpenAiClient do
 
   defp body(prompt) do
     %{
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o",
       messages: [%{role: "user", content: prompt}],
       stream: true,
       max_tokens: 1024
