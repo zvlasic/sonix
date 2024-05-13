@@ -33,7 +33,7 @@ defmodule SonixWeb.SonixLive do
       <section :if={@artists != []}>
         <.artists artists={@artists} />
         <.button phx-click="suggest">Suggest me some music!</.button>
-        <div>
+        <div class="pt-2">
           <%= raw(@suggestion) %>
         </div>
       </section>
@@ -75,7 +75,7 @@ defmodule SonixWeb.SonixLive do
       Reason should be two or three sentences long.
 
       __EXAMPLE__
-      <h1 class="text-lg font-semibold leading-8 text-zinc-800">Artist name</h1>
+      <h1 class="text-lg font-bold leading-8 text-zinc-800">Artist name</h1>
       <p class="text-base leading-6 text-zinc-600">Reason of similarity</p>
       """
 
