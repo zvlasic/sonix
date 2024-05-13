@@ -3,16 +3,14 @@ defmodule SonixWeb.SonixLive do
 
   alias Sonix.{LastFmClient, OpenAiClient}
 
-  def mount(_params, session, socket) do
-    username = session["username"]
-    {:ok, assign(socket, username: username, artists: [], suggestion: "")}
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, artists: [], suggestion: "")}
   end
 
   def render(assigns) do
     ~H"""
     <div class="container">
       <h1>Welcome to Sonix!</h1>
-      <.button id="auth" phx-click="auth">Log in with Last.FM</.button>
       <form phx-submit="users_top_artists">
         <.input
           type="select"
@@ -53,11 +51,8 @@ defmodule SonixWeb.SonixLive do
     """
   end
 
-  def handle_event("auth", _, socket),
-    do: {:noreply, redirect(socket, external: LastFmClient.oauth_url())}
-
   def handle_event("users_top_artists", %{"period" => period}, socket) do
-    username = socket.assigns.username
+    username = socket.assigns.current_user.username
 
     with {:ok, artists} <- LastFmClient.user_top_artists(username, period) do
       artists = Enum.map(artists, fn artist -> Map.merge(artist, %{favorite: true}) end)

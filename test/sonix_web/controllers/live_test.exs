@@ -5,8 +5,9 @@ defmodule SonixWeb.LiveTest do
 
   describe "Live view test" do
     test "properly redirects", %{conn: conn} do
-      {:ok, view, html} = conn |> get("/") |> live()
-      assert html =~ "Welcome to Sonix!"
+      assert {:error, {:redirect, %{to: "/users/log_in"}}} = result = live(conn, "/")
+      {:ok, conn} = follow_redirect(result, conn)
+      {:ok, view, _html} = live(conn)
 
       {:error, {:redirect, %{to: redirect_url}}} =
         view |> element("button#auth") |> render_click()

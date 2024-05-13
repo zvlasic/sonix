@@ -1,6 +1,8 @@
 defmodule SonixWeb.Router do
   use SonixWeb, :router
 
+  import SonixWeb.UserAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,25 +10,32 @@ defmodule SonixWeb.Router do
     plug :put_root_layout, html: {SonixWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-  end
-
-  pipeline :api do
-    plug :accepts, ["json"]
+    plug :fetch_current_user
   end
 
   scope "/", SonixWeb do
     pipe_through :browser
 
     get "/callback", AuthController, :callback
-
-    live "/", SonixLive
   end
 
-  if Application.compile_env(:sonix, :dev_routes) do
-    scope "/dev" do
-      pipe_through :browser
+  scope "/", SonixWeb do
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
 
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+    live_session :redirect_if_user_is_authenticated,
+      on_mount: [{SonixWeb.UserAuth, :redirect_if_user_is_authenticated}] do
+      live "/users/log_in", UserLoginLive, :new
+    end
+  end
+
+  scope "/", SonixWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    delete "/users/log_out", UserSessionController, :delete
+
+    live_session :current_user,
+      on_mount: [{SonixWeb.UserAuth, :mount_current_user}] do
+      live "/", SonixLive
     end
   end
 end
