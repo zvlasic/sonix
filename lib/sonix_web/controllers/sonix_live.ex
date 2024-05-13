@@ -76,9 +76,17 @@ defmodule SonixWeb.SonixLive do
 
     prompt =
       """
-      Please, suggest me 3 artist similar to these #{artist_names}.
-      I want output to be in the form of artist name and then a short description why
-      the artist is similar to those I like.
+      __ASK__
+      Please, suggest me similar to these #{artist_names}.
+
+      __CONSTRAINT__
+      Please list three artists.
+      Output should contain artist name and reason of similarity to artist listed in the prompt.
+      Reason should be two or three sentences long.
+
+      __EXAMPLE__
+      <h1 class="text-lg font-semibold leading-8 text-zinc-800">Artist name</h1>
+      <p class="text-base leading-6 text-zinc-600">Reason of similarity</p>
       """
 
     prompt |> OpenAiClient.stream() |> stream_response()
