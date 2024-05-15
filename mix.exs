@@ -9,7 +9,15 @@ defmodule Sonix.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+        "coveralls.cobertura": :test
+      ]
     ]
   end
 
@@ -56,7 +64,8 @@ defmodule Sonix.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:httpoison, "~> 2.2"},
       {:mox, "~> 1.0", only: :test},
-      {:provider, "~> 0.1.0"}
+      {:provider, "~> 0.1.0"},
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 
