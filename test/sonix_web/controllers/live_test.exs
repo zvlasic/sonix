@@ -30,19 +30,19 @@ defmodule SonixWeb.LiveTest do
       conn = get(recycle(conn), "/")
       {:ok, view, _html} = live(conn)
 
-      expect(LastFmClient.Test, :user_top_artists, fn "username", "overall" ->
+      expect(LastFmClient.Test, :user_top_artists, fn "username", "1month" ->
         {:ok, [%{name: "artist1", playcount: 100}, %{name: "artist2", playcount: 200}]}
       end)
 
-      submit_artist_search(view)
+      submit_artist_search(view, %{"period" => "1month"})
       assert_artist_selected(view, "artist1")
       click_artist(view, "artist1")
       assert_artist_deselected(view, "artist1")
     end
   end
 
-  defp submit_artist_search(view),
-    do: view |> element("form#period_selection") |> render_submit()
+  defp submit_artist_search(view, period),
+    do: view |> element("form#period_selection") |> render_submit(period)
 
   defp click_artist(view, artist_name),
     do: view |> element("div##{artist_name}") |> render_click()
