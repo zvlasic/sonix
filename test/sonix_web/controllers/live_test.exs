@@ -54,4 +54,19 @@ defmodule SonixWeb.LiveTest do
   defp assert_artist_deselected(view, artist_name) do
     assert view |> element("div##{artist_name}") |> render() =~ "hero-x-mark"
   end
+
+  # test "highlights display config when clicked on" do
+  #   live = display_config_listing()
+  #   [config_1, config_2 | _] = Banmed.DisplayConfig.list()
+
+  #   click_on_config(live, config_1)
+  #   assert row_selected?(live, config_1)
+  #   refute row_selected?(live, config_2)
+  #   assert_sidepane_rendered(live, config_1)
+
+  #   click_on_config(live, config_2)
+  #   refute row_selected?(live, config_1)
+  #   assert row_selected?(live, config_2)
+  #   assert_sidepane_rendered(live, config_2)
+  # end
 end
