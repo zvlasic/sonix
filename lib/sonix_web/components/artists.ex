@@ -15,7 +15,7 @@ defmodule SonixWeb.Artists do
           phx-value-artist-name={artist.name}
           class="pr-4 pb-3"
         >
-          <div class="flex rounded-lg h-full bg-gray-800 p-8 flex-col w-52">
+          <div class="flex rounded-lg h-full bg-gray-800 hover:bg-gray-600 p-8 flex-col w-52">
             <div class="flex items-center mb-3">
               <h2 class="text-white dark:text-white text-lg font-medium"><%= artist.name %></h2>
               <.icon :if={artist.favorite} name="hero-check" class="bg-green-300" />
