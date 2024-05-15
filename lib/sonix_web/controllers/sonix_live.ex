@@ -12,7 +12,7 @@ defmodule SonixWeb.SonixLive do
   def render(assigns) do
     ~H"""
     <div class="container">
-      <.simple_form for={} phx-submit="users_top_artists">
+      <.simple_form id="period_selection" for={} phx-submit="users_top_artists">
         <.input
           type="select"
           name="period"
