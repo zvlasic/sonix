@@ -100,8 +100,10 @@ defmodule SonixWeb.SonixLive do
 
   defp ignore_known_artists_in_prompt(prompt, nil), do: prompt
 
-  defp ignore_known_artists_in_prompt(prompt, ignore_artists),
-    do: prompt <> "Please don't recommend #{Enum.join(ignore_artists, ", ")}."
+  defp ignore_known_artists_in_prompt(prompt, ignore_artists) do
+    prompt <>
+      "Please don't recommend #{Enum.join(ignore_artists, ", ")} as I already know about them."
+  end
 
   defp stream_response(stream) do
     target = self()
