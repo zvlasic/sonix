@@ -88,6 +88,16 @@ defmodule SonixWeb.SonixLive do
     {:noreply, assign(socket, :suggestion, "")}
   end
 
+  def handle_info({:ignored_artists, ignored_artists}, socket),
+    do: {:noreply, assign(socket, :ignore_artists, ignored_artists)}
+
+  def handle_info({:render_response_chunk, chunk}, socket) do
+    suggestion = socket.assigns.suggestion <> chunk
+    {:noreply, assign(socket, :suggestion, suggestion)}
+  end
+
+  def handle_info(_out, socket), do: {:noreply, socket}
+
   defp ignore_known_artists_in_prompt(prompt, nil), do: prompt
 
   defp ignore_known_artists_in_prompt(prompt, ignore_artists),
@@ -112,15 +122,4 @@ defmodule SonixWeb.SonixLive do
       send(target, {:ignored_artists, ignored_artists})
     end)
   end
-
-  def handle_info({:ignored_artists, ignored_artists}, socket),
-    do: {:noreply, assign(socket, :ignore_artists, ignored_artists)}
-
-  def handle_info({:render_response_chunk, chunk}, socket) do
-    suggestion = socket.assigns.suggestion
-    suggestion = suggestion <> chunk
-    {:noreply, assign(socket, :suggestion, suggestion)}
-  end
-
-  def handle_info(_out, socket), do: {:noreply, socket}
 end
