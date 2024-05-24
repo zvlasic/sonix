@@ -71,7 +71,7 @@ defmodule SonixWeb.SonixLive do
       Please, suggest me similar to these #{artist_names}.
 
       __EXAMPLE__
-      <h1 class="text-lg font-bold leading-8 text-zinc-800">Artist name</h1>
+      <h1 class="text-lg font-bold leading-8 text-zinc-800"><a target="_blank" href="https://www.last.fm/music/Artist+name">Artist name</a></h1>
       <p class="text-base leading-6 text-zinc-600">Reason of similarity</p>
 
       __CONSTRAINT__
