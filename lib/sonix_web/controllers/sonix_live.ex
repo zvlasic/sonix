@@ -6,7 +6,8 @@ defmodule SonixWeb.SonixLive do
   import SonixWeb.Artists
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, artists: [], suggestion: "")}
+    load_ignored_artists(socket.assigns.current_user.username)
+    {:ok, assign(socket, artists: [], suggestion: "", ignore_artists: nil)}
   end
 
   def render(assigns) do
@@ -69,19 +70,28 @@ defmodule SonixWeb.SonixLive do
       __ASK__
       Please, suggest me similar to these #{artist_names}.
 
+      __EXAMPLE__
+      <h1 class="text-lg font-bold leading-8 text-zinc-800">Artist name</h1>
+      <p class="text-base leading-6 text-zinc-600">Reason of similarity</p>
+
       __CONSTRAINT__
       Please list three artists.
       Output should contain artist name and reason of similarity to artist listed in the prompt.
       Reason should be two or three sentences long.
-
-      __EXAMPLE__
-      <h1 class="text-lg font-bold leading-8 text-zinc-800">Artist name</h1>
-      <p class="text-base leading-6 text-zinc-600">Reason of similarity</p>
       """
 
-    prompt |> OpenAiClient.stream() |> stream_response()
+    prompt
+    |> ignore_known_artists_in_prompt(socket.assigns.ignore_artists)
+    |> OpenAiClient.stream()
+    |> stream_response()
+
     {:noreply, assign(socket, :suggestion, "")}
   end
+
+  defp ignore_known_artists_in_prompt(prompt, nil), do: prompt
+
+  defp ignore_known_artists_in_prompt(prompt, ignore_artists),
+    do: prompt <> "Please don't recommend #{Enum.join(ignore_artists, ", ")}."
 
   defp stream_response(stream) do
     target = self()
@@ -93,6 +103,18 @@ defmodule SonixWeb.SonixLive do
       end
     end)
   end
+
+  defp load_ignored_artists(username) do
+    target = self()
+
+    Task.Supervisor.async(Sonix.TaskSupervisor, fn ->
+      ignored_artists = Sonix.top_artist_names(username)
+      send(target, {:ignored_artists, ignored_artists})
+    end)
+  end
+
+  def handle_info({:ignored_artists, ignored_artists}, socket),
+    do: {:noreply, assign(socket, :ignore_artists, ignored_artists)}
 
   def handle_info({:render_response_chunk, chunk}, socket) do
     suggestion = socket.assigns.suggestion
