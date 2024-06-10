@@ -19,12 +19,7 @@ defmodule Sonix.LastFmClient do
     @type user_top_artists_response :: [
             %{
               name: String.t(),
-              playcount: integer(),
-              small_image: String.t(),
-              medium_image: String.t(),
-              large_image: String.t(),
-              extra_large_image: String.t(),
-              mega_image: String.t()
+              playcount: integer()
             }
           ]
 
@@ -91,17 +86,9 @@ defmodule Sonix.LastFmClient do
       Enum.map(artist_list, fn artist ->
         {playcount, _} = Integer.parse(artist.playcount)
 
-        images =
-          Map.new(artist.image, fn %{size: size, "#text": url} -> {String.to_atom(size), url} end)
-
         %{
           name: artist.name,
-          playcount: playcount,
-          small_image: images.small,
-          medium_image: images.medium,
-          large_image: images.large,
-          extra_large_image: images.extralarge,
-          mega_image: images.mega
+          playcount: playcount
         }
       end)
     end
