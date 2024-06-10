@@ -65,7 +65,8 @@ defmodule Sonix.MixProject do
       {:httpoison, "~> 2.2"},
       {:mox, "~> 1.0", only: :test},
       {:provider, "~> 0.1.0"},
-      {:excoveralls, "~> 0.18", only: :test}
+      {:excoveralls, "~> 0.18", only: :test},
+      {:req, "~> 0.5.0"}
     ]
   end
 
