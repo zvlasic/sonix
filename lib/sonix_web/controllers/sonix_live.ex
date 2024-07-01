@@ -80,10 +80,13 @@ defmodule SonixWeb.SonixLive do
       Reason should be two or three sentences long.
       """
 
-    prompt
-    |> ignore_known_artists_in_prompt(socket.assigns.ignore_artists)
-    |> OpenAiClient.stream()
-    |> stream_response()
+    prompt = ignore_known_artists_in_prompt(prompt, socket.assigns.ignore_artists)
+
+    pid = self()
+
+    start_async(socket, :chat_completion, fn ->
+      OpenAiClient.stream_completion_to_process(prompt, pid)
+    end)
 
     {:noreply, assign(socket, :suggestion, "")}
   end
@@ -91,7 +94,7 @@ defmodule SonixWeb.SonixLive do
   def handle_info({:ignored_artists, ignored_artists}, socket),
     do: {:noreply, assign(socket, :ignore_artists, ignored_artists)}
 
-  def handle_info({:render_response_chunk, chunk}, socket) do
+  def handle_info({:completion_chunk, chunk}, socket) do
     suggestion = socket.assigns.suggestion <> chunk
     {:noreply, assign(socket, :suggestion, suggestion)}
   end
@@ -103,17 +106,6 @@ defmodule SonixWeb.SonixLive do
   defp ignore_known_artists_in_prompt(prompt, ignore_artists) do
     prompt <>
       "Please don't recommend #{Enum.join(ignore_artists, ", ")} as I already know about them."
-  end
-
-  defp stream_response(stream) do
-    target = self()
-
-    Task.Supervisor.async(Sonix.TaskSupervisor, fn ->
-      for chunk <- stream, into: <<>> do
-        send(target, {:render_response_chunk, chunk})
-        chunk
-      end
-    end)
   end
 
   defp load_ignored_artists(username) do
