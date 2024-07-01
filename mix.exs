@@ -57,7 +57,6 @@ defmodule Sonix.MixProject do
        app: false,
        compile: false,
        depth: 1},
-      {:swoosh, "~> 1.5"},
       {:finch, "~> 0.13"},
       {:bandit, "~> 1.2"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
