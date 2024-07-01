@@ -31,7 +31,7 @@ defmodule Sonix.OpenAiClient do
 
   defp decode_chunk(chunk) do
     chunk
-    |> Jason.decode!()
+    |> :json.decode()
     |> Map.get("choices")
     |> hd()
     |> Map.get("delta")

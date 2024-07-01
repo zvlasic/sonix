@@ -42,10 +42,9 @@ defmodule Sonix.LastFmClient do
       url =
         "#{@api_url}?method=user.gettopartists&format=json&user=#{user}&api_key=#{Config.last_fm_api_key()}&limit=9&period=#{period}"
 
-      with {:ok, %Req.Response{body: body, status: 200}} <- Req.get(url, decode_body: false),
-           {:ok, body} <- Jason.decode(body, keys: :atoms),
-           {:ok, artists} <- Map.fetch(body, :topartists),
-           {:ok, artist_list} <- Map.fetch(artists, :artist) do
+      with {:ok, %Req.Response{body: body, status: 200}} <- Req.get(url),
+           {:ok, artists} <- Map.fetch(body, "topartists"),
+           {:ok, artist_list} <- Map.fetch(artists, "artist") do
         {:ok, normalize_user_top_artists_response(artist_list)}
       else
         error -> normalize_error_response(error)
@@ -66,12 +65,13 @@ defmodule Sonix.LastFmClient do
       url = "#{@api_url}?method=auth.getSession"
       headers = [{"Content-Type", "application/x-www-form-urlencoded"}]
 
-      with {:ok, %Req.Response{body: body, status: 200}} <-
-             Req.post(url, form: params, headers: headers, decode_body: false),
-           {:ok, %{session: %{name: name, key: key}}} <- Jason.decode(body, keys: :atoms) do
-        {:ok, %{session: key, username: name}}
-      else
-        error -> normalize_error_response(error)
+      case Req.post(url, form: params, headers: headers) do
+        {:ok, %Req.Response{body: body, status: 200}} ->
+          %{"session" => %{"name" => name, "key" => key}} = body
+          {:ok, %{session: key, username: name}}
+
+        error ->
+          normalize_error_response(error)
       end
     end
 
@@ -84,10 +84,10 @@ defmodule Sonix.LastFmClient do
 
     defp normalize_user_top_artists_response(artist_list) do
       Enum.map(artist_list, fn artist ->
-        {playcount, _} = Integer.parse(artist.playcount)
+        {playcount, _} = Integer.parse(artist["playcount"])
 
         %{
-          name: artist.name,
+          name: artist["name"],
           playcount: playcount
         }
       end)
