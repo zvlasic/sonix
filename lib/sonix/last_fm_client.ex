@@ -93,7 +93,7 @@ defmodule Sonix.LastFmClient do
       end)
     end
 
-    defp normalize_error_response({:ok, %HTTPoison.Response{body: body}}),
+    defp normalize_error_response({:ok, %Req.Response{body: body}}),
       do: {:error, Jason.decode!(body, keys: :atoms).message}
 
     defp normalize_error_response(error), do: error

@@ -62,7 +62,6 @@ defmodule Sonix.MixProject do
       {:jason, "~> 1.2"},
       {:bandit, "~> 1.2"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:httpoison, "~> 2.2"},
       {:mox, "~> 1.0", only: :test},
       {:provider, "~> 0.1.0"},
       {:excoveralls, "~> 0.18", only: :test},
